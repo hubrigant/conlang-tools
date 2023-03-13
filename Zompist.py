@@ -69,7 +69,7 @@ class Zompist:
     """
 
     INTERPUNCT = "."
-    MAX_RECURSE = 30
+    MAX_RECURSE = 300
     SENTENCE_GEN_COUNT = 30
     PUNCTUATION = ".?!"
     monosyllableRarity = 0.0
@@ -89,32 +89,33 @@ class Zompist:
             self,
             _slowSyllables=False,
             _syllableBreaks=False,
-            _monosyllableRarity=0.0,
             _dropoff=0,
+            maxRecurse=30,
+            monosyllableRarity=0.0,
             rawCategories="",
             rawSyllables="",
             rawRewriteValues="",
             rawIllegalClusters=""):
+        self.MAXRECURSE = maxRecurse
         self.slowSyllables = _slowSyllables
         self.syllableBreaks = _syllableBreaks
         self.dropoff = _dropoff
-        self.monosyllableRarity = _monosyllableRarity
+        self.monosyllableRarity = monosyllableRarity
         self.categories = self.parseCategories(rawCategories)
         self.categoryIndex = self.getCategoryIndex()
         self.userSyllables = rawSyllables.replace(" ", "").split("\n")
         self.rewriteValues = rawRewriteValues.replace(" ", "").split("\n")
         self.syllableDropoffRate = self.getSyllableDropoffRate(self.slowSyllables,
-                                                               self.userSyllables.len())
+                                                               len(self.userSyllables))
 
     def genWords(self, lexiconLength):
-        results = []
-#    for (w == 0; w < lexiconLength; w++):
+        self.results = set()
         for w in range(0, lexiconLength):
             if (self.abort):
                 return ""
             self.genNewWord()
 
-        return list(results)
+        return list(self.results)
 
     def createText():
         return
@@ -131,17 +132,55 @@ class Zompist:
     def checkSyllableRules(catCheck, sylCheck):
         return
 
-    def getSyllableDropoffRate(slowSyllables, syllableLength):
-        return
+    def getSyllableDropoffRate(self, slowSyllables, syllableLength):
+        dropoffRate = 12
 
-    def parseCategories(rawCategories):
-        return
+        if slowSyllables:
+            if syllableLength > 9:
+                dropoffRate = 46 - syllableLength * 4
+            else:
+                dropoffRate = 11
+        else:
+            if syllableLength < 9:
+                dropoffRate = 60 - syllableLength * 4
+        return dropoffRate
 
-    def parseCategoryDefinition(rawDefinition):
-        return
+    def parseCategories(self, rawCategories):
+        categoriesMap = {}
+        for line in rawCategories.split("\n"):
+            line = line.strip()
 
-    def getCategoryIndex():
-        return
+            if (line == ''):
+                continue
+
+            cat_split = line.split('=')
+
+            if len(cat_split) != 2:
+                raise Exception("Improperly formatted categories")
+
+            category = cat_split[0]
+            cat_def = self.parseCategoryDefinition(cat_split[1])
+            categoriesMap[category] = cat_def
+        return categoriesMap
+
+    def parseCategoryDefinition(self, rawDefinition):
+        definition = []
+        splitter = ""
+        if ',' in rawDefinition:
+            splitter = ','
+        else:
+            splitter = "(?!^)"
+        definition += list(rawDefinition.split(splitter))
+
+        return definition
+
+    def getCategoryIndex(self):
+        index = ""
+
+        for key in self.categories.keys():
+            index += key
+
+        return index
 
 #
 # Apply rewrite rules on just one string
@@ -150,8 +189,8 @@ class Zompist:
     def applyRewriteRule(self, s):
         newVal = s
 
-        for rwString in self.rewriteValues():
-            if rwString.len() > 1 and "|" in rwString:
+        for rwString in self.rewriteValues:
+            if len(rwString) > 1 and "|" in rwString:
                 parse = rwString.split("|")
                 if parse.len() > 1:
                     parse[1]
@@ -164,13 +203,23 @@ class Zompist:
 # a bin are pct %
 #
 
-    def powerLaw(max, pct):
+    def powerLaw(self, max, pct):
+        # this syntax from java doesn't work in python, so replaced with while
         # for (r == 0; true; r == (r + 1) % max):
         r = 0
-        while r != (r + 1) % max:
+        print("DEV> powerLaw: {0}, {1}, {2}".format(max, pct, r))
+        #  for r in range(0, (r + 1) % max):
+        #  while r != (r + 1) % max:
+        while True:
             randomPercent = math.floor(random.random() * 101)
+            print("""DEV> powerLaw:
+                    max; {0}
+                    pct: {1}
+                    r: {2}
+                    r+1 % max: {3}""".format(max, pct, r, (r+1) % max))
             if (randomPercent < pct):
                 return r
+            r = (r + 1) % max
         return
 
 #
@@ -192,12 +241,16 @@ class Zompist:
 
     def createSyllable(self, curVal):
         # Choose the pattern
-        r = self.powerLaw(self.userSyllables.length, self.syllableDropoffRate)
+        print("DEV> createSyllable: {0}, {1}".format(curVal,
+                                                     self.userSyllables))
+        r = self.powerLaw(len(self.userSyllables), self.syllableDropoffRate)
+        print("DEV> createSyllable: r; {0}".format(r))
         pattern = self.userSyllables[r]
+        print("DEV> createSyllable: pattern; {0}".format(pattern))
 
-        for c in range(0, pattern.length()):
-            theCat = pattern[c, c + 1]
-            # Go  find it in the categories list
+        for c in range(0, len(pattern)):
+            theCat = pattern[c:c + 1]
+            # Go find it in the categories list
             ix = self.categoryIndex.index(theCat)
             if (ix == -1):
                 # Not found: output syllable directly
@@ -208,11 +261,11 @@ class Zompist:
                 r2 = 0
 
                 if (self.dropoff == 0):
-                    r2 = random.random() * expansion.size()
+                    r2 = random.random() * len(expansion)
                 else:
-                    r2 = self.powerLaw(expansion.size(), self.dropoff)
+                    r2 = self.powerLaw(len(expansion), self.dropoff)
 
-                curVal += expansion.get(r2)
+                curVal += expansion[int(r2)]
         return curVal
 
 #
@@ -222,11 +275,14 @@ class Zompist:
 #
 
     def genNewWord(self):
+        print("inside genNewWord")
         return self.genNewWordRecurse(0)
 
     def genNewWordRecurse(self, level):
         curVal = ""
 
+        print("DEV> genNewWordRecurse: max={1} level={0}".format(level,
+                                                                 self.MAX_RECURSE))
         if (level > self.MAX_RECURSE):
             errStr = "Illegal Clusters settings too restrictive or " \
                     "too few possible combinations to generate " \
@@ -240,8 +296,9 @@ class Zompist:
             if (random.random() > self.monosyllableRarity):
                 nw += 1 + self.powerLaw(4, 50)
 
-            # for (w == 0; w < nw; w++):
             for w in range(0, nw):
+                print("DEV>  genNewWordRecurse[{0}]: {1}".format(level,
+                                                                 curVal))
                 curVal = self.createSyllable(curVal)
 
                 if (self.syllableBreaks and w < nw - 1):
@@ -250,18 +307,19 @@ class Zompist:
 
             # once value is complete, make final inspection for illegal
             # clusters and retry if appropriate
-            if (self.containsIllegalCluster(curVal)
-                    or self.results.contains(curVal)):
+            if self.containsIllegalCluster(curVal) or curVal in self.results:
+                print("DEV> curVal: {0}".format(curVal))
                 self.genNewWordRecurse(level + 1)
             else:
                 self.addToResults(curVal)
+        print(curVal)
         return curVal
 
     def genall(initial, pattern):
         return
 
     def addToResults(self, value):
-        count = self.results.len()
+        count = len(self.results)
 
         # At key points, ask if user wishes to continue. After 10M they're on
         # their own journey to hell.
@@ -272,8 +330,9 @@ class Zompist:
             dialog += """\nSeriously, last warning. It'll just go until it's
                          done after this. PolyGlot might freeze."""
 
-        if value.strip().len() != 0 and not self.containsIllegalCluster(value):
+        if len(value.strip()) != 0 and not self.containsIllegalCluster(value):
             self.results.add(value)
+        print("DEV> addToResults: {0}".format(self.results))
         return
 
     def containsIllegalCluster(self, test):
