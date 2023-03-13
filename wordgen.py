@@ -2,11 +2,12 @@
 
 from Zompist import Zompist
 
-zomp = Zompist(maxRecurse=500,
+zomp = Zompist(dropoff=15,
+               maxRecurse=500,
                rawCategories='C=bcdfg\nV=aeiou',
                monosyllableRarity=1.0,
                rawSyllables='CV\nV',
                rawRewriteValues='',
-               rawIllegalClusters='ba')
+               rawIllegalClusters='')
 
 print(zomp.genWords(lexiconLength=10))

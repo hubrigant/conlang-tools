@@ -20,7 +20,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 import random
 import math
-
+import logging
 
 class Zompist:
     """
@@ -89,17 +89,19 @@ class Zompist:
             self,
             _slowSyllables=False,
             _syllableBreaks=False,
-            _dropoff=0,
-            maxRecurse=30,
+            #  _dropoff=0,
+            maxRecurse=300,
+            dropoff=15,
             monosyllableRarity=0.0,
             rawCategories="",
             rawSyllables="",
             rawRewriteValues="",
             rawIllegalClusters=""):
+        self.dropoff = dropoff
         self.MAXRECURSE = maxRecurse
         self.slowSyllables = _slowSyllables
         self.syllableBreaks = _syllableBreaks
-        self.dropoff = _dropoff
+        self.dropoff = dropoff
         self.monosyllableRarity = monosyllableRarity
         self.categories = self.parseCategories(rawCategories)
         self.categoryIndex = self.getCategoryIndex()
@@ -107,6 +109,7 @@ class Zompist:
         self.rewriteValues = rawRewriteValues.replace(" ", "").split("\n")
         self.syllableDropoffRate = self.getSyllableDropoffRate(self.slowSyllables,
                                                                len(self.userSyllables))
+        logging.basicConfig(level=logging.INFO)
 
     def genWords(self, lexiconLength):
         self.results = set()
@@ -161,17 +164,18 @@ class Zompist:
             category = cat_split[0]
             cat_def = self.parseCategoryDefinition(cat_split[1])
             categoriesMap[category] = cat_def
+        logging.info("categoriesMap: {0}".format(categoriesMap))
         return categoriesMap
 
     def parseCategoryDefinition(self, rawDefinition):
         definition = []
-        splitter = ""
         if ',' in rawDefinition:
-            splitter = ','
+            definition += list(rawDefinition.split(","))
         else:
-            splitter = "(?!^)"
-        definition += list(rawDefinition.split(splitter))
+            #  splitter = "(?!^)"
+            definition += list(rawDefinition.split())
 
+        logging.info("definition: {0}".format(definition))
         return definition
 
     def getCategoryIndex(self):
@@ -207,12 +211,12 @@ class Zompist:
         # this syntax from java doesn't work in python, so replaced with while
         # for (r == 0; true; r == (r + 1) % max):
         r = 0
-        print("DEV> powerLaw: {0}, {1}, {2}".format(max, pct, r))
+        logging.debug("DEV> powerLaw: {0}, {1}, {2}".format(max, pct, r))
         #  for r in range(0, (r + 1) % max):
         #  while r != (r + 1) % max:
         while True:
             randomPercent = math.floor(random.random() * 101)
-            print("""DEV> powerLaw:
+            logging.debug("""DEV> powerLaw:
                     max; {0}
                     pct: {1}
                     r: {2}
@@ -241,31 +245,44 @@ class Zompist:
 
     def createSyllable(self, curVal):
         # Choose the pattern
-        print("DEV> createSyllable: {0}, {1}".format(curVal,
-                                                     self.userSyllables))
+        logging.debug("DEV> createSyll: {0}, {1}".format(curVal,
+                                                         self.userSyllables))
         r = self.powerLaw(len(self.userSyllables), self.syllableDropoffRate)
-        print("DEV> createSyllable: r; {0}".format(r))
+        r2 = 0
+        logging.debug("DEV> createSyllable: r; {0}".format(r))
         pattern = self.userSyllables[r]
-        print("DEV> createSyllable: pattern; {0}".format(pattern))
+        logging.info("DEV> createSyllable: pattern; {0}".format(pattern))
 
         for c in range(0, len(pattern)):
             theCat = pattern[c:c + 1]
+            logging.info("theCat: {0}".format(theCat))
             # Go find it in the categories list
             ix = self.categoryIndex.index(theCat)
+            logging.info("ix={0}".format(ix))
             if (ix == -1):
                 # Not found: output syllable directly
                 curVal += theCat
+                logging.info("if ix: {0}, curVal {1}".format(ix, curVal))
             else:
                 # Choose from this category
                 expansion = self.categories.get(theCat)
-                r2 = 0
+                logging.info("len(expansion): {0}".format(len(expansion)))
+                logging.info("expansion: {0}".format(expansion))
 
                 if (self.dropoff == 0):
-                    r2 = random.random() * len(expansion)
+                    rnd = random.random()
+                    r2 = int(rnd * len(expansion))
+                    logging.info("dropoff==0, rnd: {0}, r2: {1}".format(rnd,
+                                                                        r2))
                 else:
                     r2 = self.powerLaw(len(expansion), self.dropoff)
+                    logging.info("inner else, r2: {0}".format(r2))
 
                 curVal += expansion[int(r2)]
+                logging.info("r2={0}".format(r2))
+            logging.info("DEV> lastchk({1},{2}): curVal={0}".format(curVal,
+                                                                    c, r2))
+            logging.info("")
         return curVal
 
 #
@@ -275,21 +292,22 @@ class Zompist:
 #
 
     def genNewWord(self):
-        print("inside genNewWord")
+        logging.info("inside genNewWord")
         return self.genNewWordRecurse(0)
 
     def genNewWordRecurse(self, level):
         curVal = ""
 
-        print("DEV> genNewWordRecurse: max={1} level={0}".format(level,
-                                                                 self.MAX_RECURSE))
+        logging.info(
+            "DEV> genNewWordRecurse: max={1} level={0}".format(level,
+                                                               self.MAX_RECURSE))
         if (level > self.MAX_RECURSE):
             errStr = "Illegal Clusters settings too restrictive or " \
                     "too few possible combinations to generate " \
                     "desired number of entries.\n" \
                     "Try playing with settings to allow for more " \
                     "possibilities or reducing the target number."
-            raise ValueError(errStr)
+            #  raise ValueError(errStr)
 
         nw = 1
         if self.monosyllableRarity > 0.0:
@@ -297,8 +315,8 @@ class Zompist:
                 nw += 1 + self.powerLaw(4, 50)
 
             for w in range(0, nw):
-                print("DEV>  genNewWordRecurse[{0}]: {1}".format(level,
-                                                                 curVal))
+                logging.info("DEV>  genNewWordRecurse[{0}]: {1}".format(level,
+                                                                       curVal))
                 curVal = self.createSyllable(curVal)
 
                 if (self.syllableBreaks and w < nw - 1):
@@ -308,11 +326,11 @@ class Zompist:
             # once value is complete, make final inspection for illegal
             # clusters and retry if appropriate
             if self.containsIllegalCluster(curVal) or curVal in self.results:
-                print("DEV> curVal: {0}".format(curVal))
+                logging.info("DEV> curVal: {0}".format(curVal))
                 self.genNewWordRecurse(level + 1)
             else:
                 self.addToResults(curVal)
-        print(curVal)
+        logging.info("recurse: curval: {0}".format(curVal))
         return curVal
 
     def genall(initial, pattern):
@@ -332,7 +350,7 @@ class Zompist:
 
         if len(value.strip()) != 0 and not self.containsIllegalCluster(value):
             self.results.add(value)
-        print("DEV> addToResults: {0}".format(self.results))
+        logging.debug("DEV> addToResults: {0}".format(self.results))
         return
 
     def containsIllegalCluster(self, test):
