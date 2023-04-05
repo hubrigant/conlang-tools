@@ -4,7 +4,7 @@ from mamba import description, context, it
 from expects import expect, equal
 from lexicon_manager import manager
 
-with description("Class") as self:
+with description("Class tests") as self:
     with it("starts as a basic class"):
         manager = Manager()
 
