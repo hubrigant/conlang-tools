@@ -2,10 +2,9 @@
 
 from mamba import description, context, it
 from expects import expect, equal
-from lexicon_manager import manager
+from lexicon_manager import Manager
 
 with description("Class tests") as self:
     with it("starts as a basic class"):
         manager = Manager()
-
-        expect(type(manager)).to(equal("Manager"))
+        expect(type(manager)).to(equal(Manager1))

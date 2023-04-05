@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
 
-class manager:
+class Manager:
     def __init__(self):
         return
