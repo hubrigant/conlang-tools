@@ -17,7 +17,10 @@ class Lexicon:
         return
 
     def __iter__(self):
-        return self
+        yield self
+
+    def __len__(self):
+        return len(self._words)
 
     def __next__(self):
         if len(self._words) != 0 and self._current_word <= len(self._words):
@@ -25,3 +28,8 @@ class Lexicon:
             return self._words[self._current_word]
         else:
             raise StopIteration
+
+    def add(self, lang_word, local_word, PoS):
+        self._words.append({'lang_word': lang_word,
+                            'local_word': local_word,
+                            'PoS': PoS})
