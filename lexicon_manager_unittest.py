@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import unittest
-#  from expects import *
-#  from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open
 from lexicon_manager import Manager, Lexicon
 from collections.abc import Iterable
 
@@ -79,6 +78,15 @@ class TestManagerClass(unittest.TestCase):
                          self.lex.get_word('lang_word',
                                            'xyz',
                                            match_whole_word=True))
+
+        def test_data_file_read(self):
+            with patch('__main__.open',
+                       mock_open(read_data=self.add_words)) as m:
+                with open('foo') as h:
+                    result = h.read()
+
+            m.assert_called_once_with('foo')
+            assert result == self.add_words
 
 #  with description("<Hooks>") as self:
 #      with before.each:
