@@ -39,18 +39,16 @@ class Lexicon:
                                    'PoS': PoS})
 
     def remove(self, word_key, word_value):
-        print(self)
-        for entry in self._words:
-            if self._words[entry][word_key] == word_value:
+        for idx, entry in enumerate(self._words):
+            if entry[word_key] == word_value:
                 try:
-                    self._words[entry].remove()
+                    self._words.pop(idx)
                 except ValueError:
                     continue
         return
 
     def get_word_by_lang(self, key):
-        print(key)
-        result = [entry for idx, entry in enumerate(self._words)
-                  if entry['lang_word'] == key]
-        print(result)
-        return result
+        results = list()
+        results = [entry for idx, entry in enumerate(self._words)
+                   if entry['lang_word'] == key]
+        return results

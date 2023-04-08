@@ -21,19 +21,19 @@ class TestManagerClass(unittest.TestCase):
         self.assertIsInstance(self.mgr.lexicon, Lexicon,
                               "Manager's data structure isn't a Lexicon class")
         self.assertIsInstance(self.mgr.lexicon, Iterable)
-        self.assertEquals(len(self.mgr.lexicon), 0,
-                          "Manager's lexicon length isn't initially 0")
+        self.assertEqual(len(self.mgr.lexicon), 0,
+                         "Manager's lexicon length isn't initially 0")
         self.lex.add("abc", "def", "noun")
-        self.assertEquals(len(self.lex), 1,
-                          "Manager's lexicon length isn't 1 after add()")
-        print(self.lex)
+        self.assertEqual(len(self.lex), 1,
+                         "Manager's lexicon length isn't 1 after add()")
         self.lex.add("xyz", "ghi", "noun")
-        print(self.lex)
-        self.assertEquals('def', self.lex.get_word_by_lang('def'))
+        self.assertEqual([{'lang_word': 'abc',
+                           'local_word': 'def', 'PoS': 'noun'}],
+                         self.lex.get_word_by_lang('abc'))
+
         self.lex.remove("lang_word", "abc")
-        self.assertEquals(len(self.mgr.lexicon), 0,
-                          "Manager's lexicon length isn't initially 0")
-        print(self.lex)
+        self.assertEqual(len(self.mgr.lexicon), 0,
+                         "Manager's lexicon length isn't initially 0")
 
 
 #  with description("<Hooks>") as self:
