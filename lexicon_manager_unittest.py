@@ -12,9 +12,17 @@ class TestManagerClass(unittest.TestCase):
     def setUp(self):
         self.mgr = Manager()
         self.lex = Lexicon()
-        self.lex.add("abc", "def", "noun")
-        self.lex.add("xyz", "ghi", "noun")
-        self.lex.add("abcxyz", "ghi", "noun")
+        add_words = [
+            {'lang_word': 'abc',
+             'local_word': 'def',
+             'PoS': 'noun'},
+            {'lang_word': 'xyz',
+             'local_word': 'ghi',
+             'PoS': 'noun'},
+            {'lang_word': 'abcxyz',
+             'local_word': 'defghi',
+             'PoS': 'verb'}]
+        self.lex.add(add_words)
 
     def test_classness(self):
         self.assertIsInstance(self.mgr, Manager,
@@ -30,17 +38,25 @@ class TestManagerClass(unittest.TestCase):
 
     def test_data_structure_add(self):
         lex = Lexicon()
-        lex.add("abc", "def", "noun")
-        self.assertEqual(len(lex), 1,
-                         "Manager's lexicon length isn't 1 after add()")
-        self.lex.add("xyz", "ghi", "noun")
+        add_words = [
+            {'lang_word': 'abc',
+             'local_word': 'def',
+             'PoS': 'noun'},
+            {'lang_word': 'xyz',
+             'local_word': 'ghi',
+             'PoS': 'noun'},
+            {'lang_word': 'abcxyz',
+             'local_word': 'defghi',
+             'PoS': 'verb'}
+        ]
+        lex.add(add_words)
+        self.assertEqual(len(lex), 3,
+                         "Manager's lexicon length isn't 3 after add()")
 
     def test_data_structure_remove(self):
-        lex = Lexicon()
-        lex.add("abc", "def", "noun")
-        lex.remove("lang_word", "abc")
-        self.assertEqual(len(lex), 0,
-                         "Manager's lexicon length isn't initially 0")
+        self.lex.remove("lang_word", "abc")
+        self.assertEqual(len(self.lex), 2,
+                         "Manager's lexicon length isn't 2 after remove")
 
     def test_data_structure_querie_by_lang_word(self):
         self.assertEqual([{'lang_word': 'abc',
