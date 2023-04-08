@@ -36,9 +36,6 @@ class Lexicon:
     def add(self, word_list):
         for word in word_list:
             self._words.append(word)
-        #  return self._words.append({'lang_word': lang_word,
-        #                             'local_word': local_word,
-        #                             'PoS': PoS})
 
     def remove(self, word_key, word_value):
         for idx, entry in enumerate(self._words):
