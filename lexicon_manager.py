@@ -47,8 +47,7 @@ class Lexicon:
                     continue
         return
 
-    def get_word_by_lang(self, key):
-        results = list()
+    def get_word(self, key, value, match_whole_word=False):
         results = [entry for idx, entry in enumerate(self._words)
-                   if entry['lang_word'] == key]
+                   if entry[key] == value]
         return results
