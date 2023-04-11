@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch, mock_open
 from lexicon_manager import Manager, Lexicon
 from collections.abc import Iterable
+import json
 
 
 class TestManagerClass(unittest.TestCase):
@@ -11,7 +12,7 @@ class TestManagerClass(unittest.TestCase):
     def setUp(self):
         self.mgr = Manager()
         self.lex = Lexicon()
-        add_words = [
+        self.add_words = [
             {'lang_word': 'abc',
              'local_word': 'def',
              'PoS': 'noun'},
@@ -21,7 +22,12 @@ class TestManagerClass(unittest.TestCase):
             {'lang_word': 'abcxyz',
              'local_word': 'defghi',
              'PoS': 'verb'}]
-        self.lex.add(add_words)
+        self.add_words_json = json.dumps(self.add_words)
+        self.lex.add(self.add_words)
+        with patch('builtins.open',
+                   mock_open(read_data=self.add_words_json)) as m:
+            with open('foo') as h:
+                result = h.read()
 
     def test_classness(self):
         self.assertIsInstance(self.mgr, Manager,
@@ -79,14 +85,11 @@ class TestManagerClass(unittest.TestCase):
                                            'xyz',
                                            match_whole_word=True))
 
-        def test_data_file_read(self):
-            with patch('__main__.open',
-                       mock_open(read_data=self.add_words)) as m:
-                with open('foo') as h:
-                    result = h.read()
-
-            m.assert_called_once_with('foo')
-            assert result == self.add_words
+    def test_data_file_read(self):
+        with patch('builtins.open',
+                   mock_open(read_data=self.add_words_json)) as m:
+            self.mgr.read_file('foo')
+        self.assetEqual(len(self.mgr.lex), 6)
 
 #  with description("<Hooks>") as self:
 #      with before.each:
