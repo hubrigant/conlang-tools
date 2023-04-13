@@ -11,6 +11,9 @@ class Manager:
         with open(filename, 'r') as fh:
             self.lexicon.add(json.loads(fh.read()))
 
+    def write_file(self, filename):
+        with open(filename, 'w') as fh:
+            fh.write(json.dumps(str(self.lexicon)))
 
 class Lexicon:
     def __init__(self):
@@ -35,10 +38,7 @@ class Lexicon:
         return str(self._words)
 
     def add(self, word_list):
-        print("add> {0}".format(word_list))
-        print("add> {0}".format(type(word_list)))
         for word in word_list:
-            print("In Loop> {0}".format(word))
             self._words.append(word)
 
     def remove(self, word_key, word_value):

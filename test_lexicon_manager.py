@@ -48,6 +48,15 @@ class TestManagerClass(unittest.TestCase):
             self.mgr.read_file('foo')
             self.assertEqual(len(self.mgr.lexicon), 3)
 
+    def test_data_file_write(self):
+        with patch('builtins.open',
+                   mock_open(read_data=self.add_words_json)) as m:
+            self.mgr.read_file('foo')
+            self.assertEqual(len(self.mgr.lexicon), 3)
+            self.mgr.write_file('foo')
+            handle = m()
+            handle.write.assert_called_once()
+
     def test_data_structure_add(self):
         lex = Lexicon()
         add_words = [
