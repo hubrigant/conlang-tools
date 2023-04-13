@@ -23,23 +23,30 @@ class TestManagerClass(unittest.TestCase):
              'local_word': 'defghi',
              'PoS': 'verb'}]
         self.add_words_json = json.dumps(self.add_words)
+        #  print("setUp> {0}".format(self.add_words_json))
         self.lex.add(self.add_words)
-        with patch('builtins.open',
-                   mock_open(read_data=self.add_words_json)) as m:
-            with open('foo') as h:
-                result = h.read()
 
     def test_classness(self):
         self.assertIsInstance(self.mgr, Manager,
                               "mgr object isn't an instance of Manager")
 
     def test_data_structure_creation(self):
+        print("test_data_structure_creation")
         mgr = Manager()
         self.assertIsInstance(mgr.lexicon, Lexicon,
                               "Manager's data structure isn't a Lexicon class")
         self.assertIsInstance(mgr.lexicon, Iterable)
         self.assertEqual(len(mgr.lexicon), 0,
                          "Manager's lexicon length isn't initially 0")
+
+    def test_data_file_read(self):
+        print("test_data_file_read")
+        print(self.add_words_json)
+        print(type(self.add_words_json))
+        with patch('builtins.open',
+                   mock_open(read_data=self.add_words_json)) as m:
+            self.mgr.read_file('foo')
+            self.assertEqual(len(self.mgr.lexicon), 3)
 
     def test_data_structure_add(self):
         lex = Lexicon()
@@ -84,12 +91,6 @@ class TestManagerClass(unittest.TestCase):
                          self.lex.get_word('lang_word',
                                            'xyz',
                                            match_whole_word=True))
-
-    def test_data_file_read(self):
-        with patch('builtins.open',
-                   mock_open(read_data=self.add_words_json)) as m:
-            self.mgr.read_file('foo')
-        self.assetEqual(len(self.mgr.lex), 6)
 
 #  with description("<Hooks>") as self:
 #      with before.each:

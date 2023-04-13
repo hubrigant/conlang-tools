@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import json
+
 class Manager:
     def __init__(self):
         self.lexicon = Lexicon()
@@ -7,8 +9,7 @@ class Manager:
 
     def read_file(self, filename):
         with open(filename, 'r') as fh:
-            x = fh.readline()
-        return x
+            self.lexicon.add(json.loads(fh.read()))
 
 
 class Lexicon:
@@ -34,7 +35,10 @@ class Lexicon:
         return str(self._words)
 
     def add(self, word_list):
+        print("add> {0}".format(word_list))
+        print("add> {0}".format(type(word_list)))
         for word in word_list:
+            print("In Loop> {0}".format(word))
             self._words.append(word)
 
     def remove(self, word_key, word_value):
