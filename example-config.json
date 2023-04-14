@@ -1,0 +1,32 @@
+{
+    "configuration": {
+        "with": [
+            "std-ipa-features",
+            "std-assimilations",
+            "coronal-metathesis"
+        ],
+        "letters": [
+            "a",
+            "b",
+            "c",
+            "q"
+        ]
+    },
+    "lexicon": [
+        {
+            "lang_word": "abc",
+            "local_word": "def",
+            "PoS": "noun"
+        },
+        {
+            "lang_word": "xyz",
+            "local_word": "ghi",
+            "PoS": "noun"
+        },
+        {
+            "lang_word": "abcxyz",
+            "local_word": "defghi",
+            "PoS": "verb"
+        }
+    ]
+}
