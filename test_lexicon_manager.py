@@ -23,7 +23,7 @@ class TestManagerClass(unittest.TestCase):
              'local_word': 'defghi',
              'PoS': 'verb'}]
         self.add_words_json = json.dumps(self.add_words)
-        #  print("setUp> {0}".format(self.add_words_json))
+        print("setUp> {0}".format(self.add_words_json))
         self.lex.add(self.add_words)
 
     def test_classness(self):
