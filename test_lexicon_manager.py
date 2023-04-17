@@ -68,7 +68,7 @@ class TestManagerClass(unittest.TestCase):
         print(self.add_words_json)
         print(type(self.add_words_json))
         with patch('builtins.open',
-                   mock_open(read_data=self.add_words_json)) as m:
+                   mock_open(read_data=self.add_words_json)):
             self.mgr.read_file('foo')
             self.assertEqual(len(self.mgr.lexicon), 3)
 
@@ -126,9 +126,9 @@ class TestManagerClass(unittest.TestCase):
                                            match_whole_word=True))
 
     def test_lexifer_object_creation(self):
-        lexifer = self.mgr.lexifer(self.config)
-        self.assertIsInstance(lexifer, PhonologyDefinition,
-                              "mgr object isn't an instance of PhonologyDefinition")
+        lexi = self.mgr.lexifer(self.config)
+        self.assertIsInstance(lexi, PhonologyDefinition,
+                              "lexi isn't an instance of PhonologyDefinition")
 
 
 if __name__ == '__main__':
