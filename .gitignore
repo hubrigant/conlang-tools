@@ -128,5 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PolyGlot repo being used for reference
-PolyGlot/
+# lexifer code, available from https://lingweenie.org/conlang/lexifer.html
+lexifer/
