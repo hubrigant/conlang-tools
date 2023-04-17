@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import json
+from lexifer.PhDefParser import PhonologyDefinition
+from lexifer.wordgen import SoundSystem
+
 
 class Manager:
     def __init__(self):
@@ -14,6 +17,12 @@ class Manager:
     def write_file(self, filename):
         with open(filename, 'w') as fh:
             fh.write(json.dumps(str(self.lexicon)))
+
+    def lexifer(self, config):
+        self.lexifer_obj = PhonologyDefinition(SoundSystem(),
+                                               opthash=config)
+        return self.lexifer_obj
+
 
 class Lexicon:
     def __init__(self):

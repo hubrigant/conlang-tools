@@ -5,6 +5,8 @@ from unittest.mock import patch, mock_open
 from lexicon_manager import Manager, Lexicon
 from collections.abc import Iterable
 import json
+from lexifer.PhDefParser import PhonologyDefinition
+#  from lexifer.wordgen import SoundSystem
 
 
 class TestManagerClass(unittest.TestCase):
@@ -23,8 +25,30 @@ class TestManagerClass(unittest.TestCase):
              'local_word': 'defghi',
              'PoS': 'verb'}]
         self.add_words_json = json.dumps(self.add_words)
-        print("setUp> {0}".format(self.add_words_json))
         self.lex.add(self.add_words)
+        self.config = {
+            "configuration": {
+                "options": [
+                    "std-ipa-features",
+                    "std-assimilations",
+                    "coronal-metathesis"
+                ],
+                "letters": [
+                    "a",
+                    "b",
+                    "c",
+                    "o",
+                    "q"
+                ],
+                "ph_classes": [
+                    "C = b c q",
+                    "V = a o"
+                ],
+                "macros": {},
+                "features": []
+            }
+        }
+        print("setUp> {0}".format(self.config))
 
     def test_classness(self):
         self.assertIsInstance(self.mgr, Manager,
@@ -101,15 +125,10 @@ class TestManagerClass(unittest.TestCase):
                                            'xyz',
                                            match_whole_word=True))
 
-#  with description("<Hooks>") as self:
-#      with before.each:
-#          self.manager = Manager()
-#          self.datastore = 'language1.lmgr'
-#          with it("has file management capapbilities"):
-#              @patch('Manager.open') #, mock_open(read_data='abc\n'))
-#              expect(self.manager).to(have_property('read_file'))
-#              expect(self.manager.read_file).to(be_callable)
-#              expect(self.manager.read_file(self.datastore).to(equal("abc\n")))
+    def test_lexifer_object_creation(self):
+        lexifer = self.mgr.lexifer(self.config)
+        self.assertIsInstance(lexifer, PhonologyDefinition,
+                              "mgr object isn't an instance of PhonologyDefinition")
 
 
 if __name__ == '__main__':
