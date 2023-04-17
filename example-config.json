@@ -1,15 +1,22 @@
 {
     "configuration": {
-        "with": [
+        "options": [
             "std-ipa-features",
             "std-assimilations",
             "coronal-metathesis"
         ],
+        "features": [],
+        "macros": {},
         "letters": [
             "a",
             "b",
             "c",
+            "o",
             "q"
+        ],
+        "ph_classes": [
+            "C = b c q",
+            "V = a o"
         ]
     },
     "lexicon": [
