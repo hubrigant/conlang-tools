@@ -73,6 +73,8 @@ class PhonologyDefinition(object):
             self.ph_classes = []
             for line in opthash['configuration']['ph_classes']:
                 self.parse_class(line)
+            for line in opthash['configuration']['words']:
+                self.parse_words(line)
         self.sanity_check()
 
     def parse(self):
@@ -172,11 +174,17 @@ class PhonologyDefinition(object):
         (sclass, values) = line.split("=")
         sclass = sclass.strip()
         values = values.strip()
+        print("parse_class> sclass {0}; values {1}".format(
+            sclass, values))
         if sclass[0] == '$':
             self.macros["\\" + sclass] = values
         else:
             self.ph_classes += values.split()
+            print("parse_class> ph_classes: {0}".format(
+                self.ph_classes))
             self.soundsys.add_ph_unit(sclass, values)
+            print("parse_class> phonemeset: {0}".format(
+                self.soundsys.phonemeset))
 
     def parse_clusterfield(self, line, fh):
         c2list = line.split()[1:]  # ignore leading %

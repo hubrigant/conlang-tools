@@ -6,7 +6,7 @@ from lexicon_manager import Manager, Lexicon
 from collections.abc import Iterable
 import json
 from lexifer.PhDefParser import PhonologyDefinition
-from lexifer.wordgen import textify
+from lexifer.wordgen import textify, SoundSystem
 
 
 class TestManagerClass(unittest.TestCase):
@@ -45,7 +45,11 @@ class TestManagerClass(unittest.TestCase):
                     "V = a o"
                 ],
                 "macros": {},
-                "features": []
+                "features": [],
+                "words": [
+                    "V?CV?",
+                    "V?CVC"
+                ]
             }
         }
         self.lexi = self.mgr.lexifer(self.config)
@@ -132,8 +136,9 @@ class TestManagerClass(unittest.TestCase):
                               "lexi isn't an instance of PhonologyDefinition")
 
     def test_lexifer_word_generation(self):
-        words = textify(self.lexi, 3)
+        words = SoundSystem.generate(self.lexi, n=3)
         print(words)
+        self.assertEqual(len(words), 3)
 
 
 if __name__ == '__main__':
