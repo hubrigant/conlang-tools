@@ -72,7 +72,6 @@ class PhonologyDefinition(object):
             self.letters = opthash['configuration']["letters"]
             self.ph_classes = []
             for line in opthash['configuration']['ph_classes']:
-                #  self.ph_classes = opthash['configuration']["ph_classes"]   # phoneme classes
                 self.parse_class(line)
         self.sanity_check()
 
@@ -107,8 +106,11 @@ class PhonologyDefinition(object):
                     raise ParseError(line)
                 line = f.readline()
         # A non-fatal bit of sanity checking and warning.
-        if (self.soundsys.use_assim or self.soundsys.use_coronal_metathesis) and self.soundsys.sorter is None:
-            sys.stderr.write("Without 'letters:' cannot apply assimilations or coronal metathesis.\n\n")
+        if (
+            (self.soundsys.use_assim or self.soundsys.use_coronal_metathesis)
+            and self.soundsys.sorter is None):
+            sys.stderr.write("Without 'letters:' cannot apply ",
+                             "assimilations or coronal metathesis.\n\n")
 
 # add option to remove: ji, wu, bw, dl, etc. forbid onset
 # clusters from the same place
@@ -166,6 +168,7 @@ class PhonologyDefinition(object):
         return word
 
     def parse_class(self, line):
+        print("parse_class> {0}".format(line))
         (sclass, values) = line.split("=")
         sclass = sclass.strip()
         values = values.strip()
@@ -215,8 +218,7 @@ class PhonologyDefinition(object):
         phonemes = set(self.ph_classes)
         if not phonemes <= letters:
             diff = list(phonemes - letters)
-            msg = "** A phoneme class contains '{}' missing from 'letters'.\n".format(
-                " ".join(diff))
+            msg = "** A phoneme class contains '{}' missing from 'letters'.\n".format(" ".join(diff))
             sys.stderr.write(msg)
             sys.stderr.write("** Strange word shapes are likely to result.\n")
 
