@@ -228,7 +228,6 @@ class SoundSystem:
         """Generate n unique words randomly from the rules."""
         words = set()
         while len(words) < n:
-            print("wordgen> {0}".format(self.ruleset))
             rule = select(self.ruleset)
             word = self.apply_filters(self.run_rule(rule))
             if word != 'REJECT':
