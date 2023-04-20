@@ -53,14 +53,14 @@ class TestManagerClass(unittest.TestCase):
             }
         }
         self.lexifer_obj = self.mgr.lexifer(self.config)
-        print("setUp> {0}".format(self.config))
+        #  print("setUp> {0}".format(self.config))
 
     def test_classness(self):
         self.assertIsInstance(self.mgr, Manager,
                               "mgr object isn't an instance of Manager")
 
     def test_data_structure_creation(self):
-        print("test_data_structure_creation")
+        #  print("test_data_structure_creation")
         mgr = Manager()
         self.assertIsInstance(mgr.lexicon, Lexicon,
                               "Manager's data structure isn't a Lexicon class")
@@ -69,9 +69,9 @@ class TestManagerClass(unittest.TestCase):
                          "Manager's lexicon length isn't initially 0")
 
     def test_data_file_read(self):
-        print("test_data_file_read")
-        print(self.add_words_json)
-        print(type(self.add_words_json))
+        #  print("test_data_file_read")
+        #  print(self.add_words_json)
+        #  print(type(self.add_words_json))
         with patch('builtins.open',
                    mock_open(read_data=self.add_words_json)):
             self.mgr.read_file('foo')
@@ -137,7 +137,6 @@ class TestManagerClass(unittest.TestCase):
 
     def test_lexifer_word_generation(self):
         words = self.lexifer_obj.generate(n=3)
-        print(words)
         self.assertEqual(len(words), 3)
 
 
