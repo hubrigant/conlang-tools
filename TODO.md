@@ -7,6 +7,7 @@ List of ideas yet to be implemented
 - [ ] Add temporary cache of in-lanaguage words that haven't been used yet
 - [ ] Add interface for pulling words from the cache to add to the lexicon
 - [ ] Add ability to allow/block duplicate words in both in-language and local language
+- [ ] Decide whether UI belongs in this repo or if it should be its own
 
 ## Lexicon class
 - [ ] Add etymology tracking
