@@ -14,3 +14,5 @@ List of ideas yet to be implemented
 - [ ] Add option to sort search results
 - [ ] Add option to filter results by multiple criteria
 - [ ] Add defined parts of speech to the lexicon config
+- [ ] Decide how many more concepts need to be encapsulated in a lexical entry (bound vs. free morphemes, declensions, etc.)
+- [ ] Decide where gramatical rules belong. Are they part of the lexicon or some other entity?
